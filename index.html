@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Моя карта</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: "Open Sans", Arial, sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        // Оголошення змінної MyLocation з координатами моєї локації
+        const MyLocation = { lat: 48.533657, lng: 25.028791 }
+
+        // Функція для ініціалізації карти
+        function initMap() {
+            // Налаштування параметрів карти
+            const options = {
+                center: { lat: MyLocation.lat, lng: MyLocation.lng },
+                zoom: 13, // Початковий масштаб карти
+                mapId: 'f58f208ee99d726f', // ID стилю карти на серверах Google (грубо кажучи я ним керую, він в моєму аку)
+                mapTypeControl: false, // Відключення перемикача між картою і супутниковим виглядом
+                streetViewControl: false // Відключення кнопки перегляду вулиць
+            };
+
+            // Ініціалізація карти з заданими параметрами
+            const map = new google.maps.Map(document.getElementById('map'), options);
+
+            // Додавання маркера для моєї локації
+            new google.maps.Marker({
+                position: { lat: MyLocation.lat, lng: MyLocation.lng },
+                map: map,
+                icon: {
+                    url: './user.png',
+                    scaledSize: new google.maps.Size(50, 50),
+                },
+                title: 'Ви',
+            });
+
+            // Функція для ініціалізації маркера зі зазначеними координатами та зображенням
+            const initPoint = (lat, lng, url, userId, content) => {
+                // Додавання синьої точки навколо юзера
+                new google.maps.Marker({
+                    position: { lat, lng },
+                    map: map,
+                    icon: {
+                        url: './blue-point.png',
+                        scaledSize: new google.maps.Size(50, 50),
+                        anchor: new google.maps.Point(25, 25),
+                    },
+                });
+
+                // Додавання маркера зі зображенням юзера
+                const markerUser = new google.maps.Marker({
+                    position: { lat: lat, lng },
+                    map: map,
+                    icon: {
+                        url,
+                        scaledSize: new google.maps.Size(40, 40),
+                        anchor: new google.maps.Point(20, 20),
+                    },
+                });
+
+
+                // Додавання події "mouseover" на маркері
+                let infoWindow
+                markerUser.addListener('mouseover', function () {
+                    infoWindow = new google.maps.InfoWindow({
+                        content,
+                        closeButton: false
+                    });
+                    infoWindow.open(map, markerUser);
+
+                    // Додавання події "mouseout" на маркері
+                    markerUser.addListener('mouseout', function () {
+                        infoWindow.close();
+                    });
+                });
+
+                markerUser.addListener('click', function () {
+                    infoWindow.close();
+
+                    setTimeout(() => { //видали цей таймаут. Поставив бо він ліз перед infoWindow.close();. async\await не допомагало
+                        alert(`Тут модалка з інфою про юзера id-${userId}, але на початку можна просто перекидати на профіль (бо інфа про юзера це додатковий запит на сервак який треба ще проробити)`)
+                    }, 0);
+                });
+            }
+
+            // Ініціалізація маркерів з різними координатами та зображеннями
+            initPoint(48.503657, 25.037681, 'https://media.creativemornings.com/uploads/user/avatar/120448/profile-circle.png', 1, 'Андрій А.')
+            initPoint(48.553657, 25.025571, 'https://media.creativemornings.com/uploads/user/avatar/120448/profile-circle.png', 2, 'Андрій А.')
+            initPoint(48.513657, 25.013461, 'https://media.creativemornings.com/uploads/user/avatar/120448/profile-circle.png', 3, 'Андрій А.')
+            initPoint(48.563657, 25.031351, 'https://media.creativemornings.com/uploads/user/avatar/120448/profile-circle.png', 4, 'Андрій А.')
+        }
+
+
+    </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBa2bEilR3Q9d1mRl_CvqURaH4ubsrcbr0&callback=initMap">
+        // мій апі ключ - AIzaSyBa2bEilR3Q9d1mRl_CvqURaH4ubsrcbr0
+        </script>
+</body>
+
+</html>
